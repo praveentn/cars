@@ -1,0 +1,382 @@
+<!-- templates/pages/knowledge.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - Cognitive Architecture</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh; color: #333;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            border-radius: 15px; padding: 30px; margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .header h1 {
+            font-size: 2.5rem; background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-align: center; margin-bottom: 10px;
+        }
+        .nav-bar {
+            background: rgba(255, 255, 255, 0.9); border-radius: 12px;
+            padding: 15px; margin-bottom: 30px; box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+        .nav-links { display: flex; justify-content: center; gap: 30px; list-style: none; }
+        .nav-links a {
+            text-decoration: none; color: #333; font-weight: 600;
+            padding: 10px 20px; border-radius: 8px; transition: all 0.3s ease;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            background: linear-gradient(45deg, #667eea, #764ba2); color: white;
+            transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.95); border-radius: 15px;
+            padding: 25px; margin-bottom: 30px; box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        .search-section { display: flex; gap: 15px; margin-bottom: 20px; align-items: center; }
+        .search-input {
+            flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px;
+            font-size: 1rem; transition: all 0.3s ease;
+        }
+        .search-input:focus {
+            outline: none; border-color: #667eea; box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none;
+            padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: 600;
+            transition: all 0.3s ease; text-decoration: none; display: inline-block;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4); }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .card {
+            background: rgba(255, 255, 255, 0.95); border-radius: 15px; padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15); }
+        .knowledge-item {
+            background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;
+            border-left: 4px solid #667eea; transition: all 0.3s ease;
+        }
+        .knowledge-item:hover { background: #e3f2fd; transform: translateX(5px); }
+        .knowledge-title { font-weight: 700; color: #333; margin-bottom: 8px; }
+        .knowledge-content { color: #666; line-height: 1.5; margin-bottom: 10px; }
+        .knowledge-meta {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.85rem; color: #888;
+        }
+        .upload-section {
+            border: 2px dashed #ddd; border-radius: 8px; padding: 30px;
+            text-align: center; background: #fafafa; transition: all 0.3s ease;
+        }
+        .upload-section:hover { border-color: #667eea; background: #f0f7ff; }
+        .upload-section.dragover { border-color: #667eea; background: #e3f2fd; }
+        .tabs { display: flex; background: #f8f9fa; border-radius: 8px; padding: 5px; margin-bottom: 20px; }
+        .tab {
+            flex: 1; padding: 10px; text-align: center; border-radius: 6px;
+            cursor: pointer; font-weight: 600; transition: all 0.3s ease;
+        }
+        .tab.active { background: white; color: #667eea; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .metric { display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .metric-value { font-weight: 700; color: #333; }
+        .concept-graph {
+            width: 100%; height: 300px; border: 1px solid #ddd;
+            border-radius: 8px; background: #fafafa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 Knowledge Management</h1>
+            <p>Manage and explore the system's knowledge base</p>
+        </div>
+
+        <nav class="nav-bar">
+            <ul class="nav-links">
+                <li><a href="/">Dashboard</a></li>
+                <li><a href="/agents">Agents</a></li>
+                <li><a href="/monitoring">Monitoring</a></li>
+                <li><a href="/knowledge" class="active">Knowledge</a></li>
+            </ul>
+        </nav>
+
+        <div class="controls-panel">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('search')">Search & Explore</div>
+                <div class="tab" onclick="switchTab('upload')">Add Knowledge</div>
+                <div class="tab" onclick="switchTab('concepts')">Concept Graph</div>
+                <div class="tab" onclick="switchTab('analytics')">Analytics</div>
+            </div>
+
+            <div id="search-tab" class="tab-content active">
+                <div class="search-section">
+                    <input type="text" class="search-input" id="search-query" 
+                           placeholder="Search knowledge base..." onkeypress="handleSearchKeypress(event)">
+                    <button class="btn" onclick="performSearch()">🔍 Search</button>
+                    <button class="btn" onclick="clearSearch()">Clear</button>
+                </div>
+            </div>
+
+            <div id="upload-tab" class="tab-content">
+                <div class="upload-section" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)">
+                    <h3>Add New Knowledge</h3>
+                    <p>Drag and drop files here or click to upload</p>
+                    <input type="file" id="file-input" style="display: none;" multiple accept=".txt,.pdf,.md,.docx" onchange="handleFileSelect(event)">
+                    <button class="btn" onclick="document.getElementById('file-input').click()">Choose Files</button>
+                </div>
+                <div style="margin-top: 20px;">
+                    <h4>Manual Knowledge Entry</h4>
+                    <textarea id="manual-content" placeholder="Enter knowledge content..." 
+                             style="width: 100%; height: 150px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin: 10px 0;"></textarea>
+                    <input type="text" id="knowledge-source" placeholder="Source (optional)" 
+                           style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 10px;">
+                    <button class="btn" onclick="addManualKnowledge()">Add Knowledge</button>
+                </div>
+            </div>
+
+            <div id="concepts-tab" class="tab-content">
+                <div class="concept-graph" id="concept-graph">
+                    <div style="padding: 50px; text-align: center; color: #666;">
+                        Concept graph visualization would appear here<br>
+                        <small>Requires D3.js or similar visualization library</small>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;">
+                    <button class="btn" onclick="refreshConceptGraph()">Refresh Graph</button>
+                    <button class="btn" onclick="exportConceptGraph()">Export</button>
+                </div>
+            </div>
+
+            <div id="analytics-tab" class="tab-content">
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>Knowledge Base Statistics</h3>
+                        <div id="kb-stats">Loading...</div>
+                    </div>
+                    <div class="card">
+                        <h3>Recent Activity</h3>
+                        <div id="recent-kb-activity">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card" style="grid-column: 1 / -1;">
+                <h3>Search Results</h3>
+                <div id="search-results">
+                    <p style="color: #666; text-align: center; padding: 40px;">
+                        Enter a search query to explore the knowledge base
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        function handleSearchKeypress(event) {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        }
+
+        async function performSearch() {
+            const query = document.getElementById('search-query').value.trim();
+            if (!query) return;
+
+            const resultsContainer = document.getElementById('search-results');
+            resultsContainer.innerHTML = '<p style="text-align: center;">Searching...</p>';
+
+            try {
+                // Simulate search API call
+                const mockResults = [
+                    {
+                        id: '1',
+                        title: 'Machine Learning Fundamentals',
+                        content: 'Machine learning is a subset of artificial intelligence that focuses on algorithms that can learn from data...',
+                        source: 'ML Textbook',
+                        relevance_score: 0.95,
+                        created_at: new Date().toISOString()
+                    },
+                    {
+                        id: '2',
+                        title: 'Neural Network Architecture',
+                        content: 'Neural networks are inspired by biological neural networks and consist of interconnected nodes...',
+                        source: 'Research Paper',
+                        relevance_score: 0.87,
+                        created_at: new Date().toISOString()
+                    }
+                ];
+
+                displaySearchResults(mockResults);
+
+            } catch (error) {
+                resultsContainer.innerHTML = '<p style="color: red; text-align: center;">Error performing search</p>';
+            }
+        }
+
+        function displaySearchResults(results) {
+            const container = document.getElementById('search-results');
+            
+            if (results.length === 0) {
+                container.innerHTML = '<p style="color: #666; text-align: center;">No results found</p>';
+                return;
+            }
+
+            container.innerHTML = results.map(result => `
+                <div class="knowledge-item">
+                    <div class="knowledge-title">${result.title || 'Untitled'}</div>
+                    <div class="knowledge-content">${result.content.substring(0, 200)}...</div>
+                    <div class="knowledge-meta">
+                        <span>Source: ${result.source || 'Unknown'}</span>
+                        <span>Relevance: ${(result.relevance_score * 100).toFixed(1)}%</span>
+                        <span>${new Date(result.created_at).toLocaleDateString()}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function clearSearch() {
+            document.getElementById('search-query').value = '';
+            document.getElementById('search-results').innerHTML = '<p style="color: #666; text-align: center; padding: 40px;">Enter a search query to explore the knowledge base</p>';
+        }
+
+        // File upload handlers
+        function handleDragOver(event) {
+            event.preventDefault();
+        }
+
+        function handleDragEnter(event) {
+            event.preventDefault();
+            event.target.closest('.upload-section').classList.add('dragover');
+        }
+
+        function handleDragLeave(event) {
+            event.preventDefault();
+            event.target.closest('.upload-section').classList.remove('dragover');
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            const uploadSection = event.target.closest('.upload-section');
+            uploadSection.classList.remove('dragover');
+            
+            const files = event.dataTransfer.files;
+            processFiles(files);
+        }
+
+        function handleFileSelect(event) {
+            const files = event.target.files;
+            processFiles(files);
+        }
+
+        function processFiles(files) {
+            for (let file of files) {
+                console.log('Processing file:', file.name);
+                // Here you would upload and process the file
+                alert(`File "${file.name}" would be processed and added to knowledge base`);
+            }
+        }
+
+        function addManualKnowledge() {
+            const content = document.getElementById('manual-content').value.trim();
+            const source = document.getElementById('knowledge-source').value.trim();
+            
+            if (!content) {
+                alert('Please enter some content');
+                return;
+            }
+
+            // Simulate adding knowledge
+            console.log('Adding knowledge:', { content, source });
+            alert('Knowledge added successfully!');
+            
+            // Clear form
+            document.getElementById('manual-content').value = '';
+            document.getElementById('knowledge-source').value = '';
+        }
+
+        function refreshConceptGraph() {
+            alert('Concept graph refresh functionality would be implemented here');
+        }
+
+        function exportConceptGraph() {
+            alert('Concept graph export functionality would be implemented here');
+        }
+
+        async function loadKnowledgeStats() {
+            try {
+                // Mock statistics
+                const stats = {
+                    total_documents: 1247,
+                    total_chunks: 8934,
+                    total_concepts: 456,
+                    avg_relevance: 0.73,
+                    last_updated: new Date().toISOString()
+                };
+
+                const container = document.getElementById('kb-stats');
+                container.innerHTML = `
+                    <div class="metric">
+                        <span>Total Documents</span>
+                        <span class="metric-value">${stats.total_documents}</span>
+                    </div>
+                    <div class="metric">
+                        <span>Knowledge Chunks</span>
+                        <span class="metric-value">${stats.total_chunks}</span>
+                    </div>
+                    <div class="metric">
+                        <span>Concepts Mapped</span>
+                        <span class="metric-value">${stats.total_concepts}</span>
+                    </div>
+                    <div class="metric">
+                        <span>Avg Relevance</span>
+                        <span class="metric-value">${(stats.avg_relevance * 100).toFixed(1)}%</span>
+                    </div>
+                `;
+
+                // Mock recent activity
+                const activities = [
+                    'Added document: "AI Ethics Guidelines"',
+                    'Updated concept: "Machine Learning"',
+                    'Indexed 23 new chunks',
+                    'Merged similar concepts',
+                    'Cleaned up old knowledge entries'
+                ];
+
+                const activityContainer = document.getElementById('recent-kb-activity');
+                activityContainer.innerHTML = activities.map(activity => `
+                    <div style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                        ${activity}
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                console.error('Error loading knowledge stats:', error);
+            }
+        }
+
+        // Load initial data
+        document.addEventListener('DOMContentLoaded', () => {
+            loadKnowledgeStats();
+        });
+    </script>
+</body>
+</html>

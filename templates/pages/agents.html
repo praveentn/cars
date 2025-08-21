@@ -1,0 +1,756 @@
+<!-- templates/pages/agents.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}} - Cognitive Architecture</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            text-align: center;
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .nav-bar {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 600;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #51cf66, #40c057);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffd43b, #fab005);
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .agent-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .agent-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            text-transform: capitalize;
+        }
+
+        .status-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .status-active { background: #4CAF50; box-shadow: 0 0 10px rgba(76, 175, 80, 0.5); }
+        .status-idle { background: #FFC107; box-shadow: 0 0 10px rgba(255, 193, 7, 0.5); }
+        .status-error { background: #F44336; box-shadow: 0 0 10px rgba(244, 67, 54, 0.5); }
+        .status-stopped { background: #9E9E9E; }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .metric {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #667eea;
+            display: block;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .agent-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .config-panel {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+
+        .config-panel.show {
+            display: block;
+        }
+
+        .config-form {
+            display: grid;
+            gap: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 20px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid;
+        }
+
+        .alert-success {
+            background: rgba(76, 175, 80, 0.1);
+            border-color: rgba(76, 175, 80, 0.3);
+            color: #2e7d32;
+        }
+
+        .alert-error {
+            background: rgba(244, 67, 54, 0.1);
+            border-color: rgba(244, 67, 54, 0.3);
+            color: #c62828;
+        }
+
+        .alert-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border-color: rgba(255, 193, 7, 0.3);
+            color: #f57f17;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 5px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Agent Management</h1>
+            <p>Monitor, control, and configure cognitive agents</p>
+        </div>
+
+        <nav class="nav-bar">
+            <ul class="nav-links">
+                <li><a href="/" class="{% if active_page == 'dashboard' %}active{% endif %}">Dashboard</a></li>
+                <li><a href="/agents" class="{% if active_page == 'agents' %}active{% endif %}">Agents</a></li>
+                <li><a href="/monitoring" class="{% if active_page == 'monitoring' %}active{% endif %}">Monitoring</a></li>
+                <li><a href="/knowledge" class="{% if active_page == 'knowledge' %}active{% endif %}">Knowledge</a></li>
+            </ul>
+        </nav>
+
+        <div class="controls-panel">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('overview')">Overview</div>
+                <div class="tab" onclick="switchTab('control')">Control</div>
+                <div class="tab" onclick="switchTab('config')">Configuration</div>
+            </div>
+
+            <div id="overview-tab" class="tab-content active">
+                <div class="controls-grid">
+                    <button class="btn" onclick="refreshAgents()">🔄 Refresh Status</button>
+                    <button class="btn btn-success" onclick="startAllAgents()">▶️ Start All</button>
+                    <button class="btn btn-warning" onclick="restartAllAgents()">🔄 Restart All</button>
+                    <button class="btn btn-danger" onclick="stopAllAgents()">⏹️ Stop All</button>
+                </div>
+            </div>
+
+            <div id="control-tab" class="tab-content">
+                <div class="controls-grid">
+                    <button class="btn" onclick="runSystemTest()">🧪 Run System Test</button>
+                    <button class="btn" onclick="clearCaches()">🧹 Clear Caches</button>
+                    <button class="btn" onclick="exportAgentLogs()">📄 Export Logs</button>
+                    <button class="btn" onclick="resetMetrics()">📊 Reset Metrics</button>
+                </div>
+            </div>
+
+            <div id="config-tab" class="tab-content">
+                <div class="controls-grid">
+                    <button class="btn" onclick="openGlobalConfig()">⚙️ Global Settings</button>
+                    <button class="btn" onclick="importConfig()">📥 Import Config</button>
+                    <button class="btn" onclick="exportConfig()">📤 Export Config</button>
+                    <button class="btn" onclick="resetToDefaults()">🔄 Reset Defaults</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="alerts-container"></div>
+
+        <div class="agents-grid" id="agents-grid">
+            <div class="loading">
+                <div class="spinner"></div>
+                Loading agents...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let agents = [];
+        let refreshInterval;
+
+        async function loadAgents() {
+            try {
+                const response = await fetch('/api/agents/status');
+                agents = await response.json();
+                
+                renderAgents();
+                
+            } catch (error) {
+                console.error('Error loading agents:', error);
+                showAlert('Error loading agents', 'error');
+            }
+        }
+
+        function renderAgents() {
+            const grid = document.getElementById('agents-grid');
+            grid.innerHTML = '';
+            
+            agents.forEach(agent => {
+                const agentCard = createAgentCard(agent);
+                grid.appendChild(agentCard);
+            });
+        }
+
+        function createAgentCard(agent) {
+            const card = document.createElement('div');
+            card.className = 'agent-card';
+            card.id = `agent-${agent.name}`;
+            
+            const statusClass = `status-${agent.status}`;
+            const statusText = agent.status.charAt(0).toUpperCase() + agent.status.slice(1);
+            
+            card.innerHTML = `
+                <div class="agent-header">
+                    <div>
+                        <span class="agent-name">${agent.name.replace('_', ' ')}</span>
+                        <span class="status-indicator ${statusClass}" title="${statusText}"></span>
+                    </div>
+                    <span style="font-size: 0.9rem; color: #666;">${statusText}</span>
+                </div>
+                
+                <div class="metrics-grid">
+                    <div class="metric">
+                        <span class="metric-value">${agent.processed_count || 0}</span>
+                        <div class="metric-label">Processed</div>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">${agent.error_count || 0}</span>
+                        <div class="metric-label">Errors</div>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">${agent.success_rate || 0}%</span>
+                        <div class="metric-label">Success Rate</div>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">${formatTime(agent.last_activity)}</span>
+                        <div class="metric-label">Last Active</div>
+                    </div>
+                </div>
+                
+                <div class="agent-actions">
+                    <button class="btn btn-small btn-success" onclick="startAgent('${agent.name}')" 
+                            ${agent.status === 'active' ? 'disabled' : ''}>
+                        Start
+                    </button>
+                    <button class="btn btn-small btn-warning" onclick="restartAgent('${agent.name}')">
+                        Restart
+                    </button>
+                    <button class="btn btn-small btn-danger" onclick="stopAgent('${agent.name}')"
+                            ${agent.status === 'stopped' ? 'disabled' : ''}>
+                        Stop
+                    </button>
+                    <button class="btn btn-small" onclick="toggleConfig('${agent.name}')">
+                        Config
+                    </button>
+                </div>
+                
+                <div class="config-panel" id="config-${agent.name}">
+                    <div class="config-form">
+                        <div class="form-group">
+                            <label>Log Level:</label>
+                            <select id="loglevel-${agent.name}">
+                                <option value="DEBUG">Debug</option>
+                                <option value="INFO" selected>Info</option>
+                                <option value="WARNING">Warning</option>
+                                <option value="ERROR">Error</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Max Concurrent Tasks:</label>
+                            <input type="number" id="maxTasks-${agent.name}" value="10" min="1" max="100">
+                        </div>
+                        <div class="form-group">
+                            <label>Processing Interval (seconds):</label>
+                            <input type="number" id="interval-${agent.name}" value="30" min="1" max="3600">
+                        </div>
+                        <button class="btn btn-small" onclick="updateAgentConfig('${agent.name}')">
+                            Update Config
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        function switchTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+        }
+
+        function formatTime(timestamp) {
+            if (!timestamp) return 'Never';
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMins = Math.floor(diffMs / 60000);
+            
+            if (diffMins < 1) return 'Just now';
+            if (diffMins < 60) return `${diffMins}m ago`;
+            if (diffMins < 1440) return `${Math.floor(diffMins / 60)}h ago`;
+            return `${Math.floor(diffMins / 1440)}d ago`;
+        }
+
+        function showAlert(message, type = 'info') {
+            const alertsContainer = document.getElementById('alerts-container');
+            
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            alertsContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Agent control functions
+        async function startAgent(agentName) {
+            try {
+                const response = await fetch(`/api/orchestrator/start-agent/${agentName}`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    showAlert(`Agent ${agentName} started successfully`, 'success');
+                    setTimeout(loadAgents, 1000);
+                } else {
+                    showAlert(`Failed to start agent ${agentName}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error starting agent ${agentName}`, 'error');
+            }
+        }
+
+        async function stopAgent(agentName) {
+            try {
+                const response = await fetch(`/api/orchestrator/stop-agent/${agentName}`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    showAlert(`Agent ${agentName} stopped successfully`, 'success');
+                    setTimeout(loadAgents, 1000);
+                } else {
+                    showAlert(`Failed to stop agent ${agentName}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error stopping agent ${agentName}`, 'error');
+            }
+        }
+
+        async function restartAgent(agentName) {
+            try {
+                const response = await fetch(`/api/orchestrator/restart-agent/${agentName}`, {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    showAlert(`Agent ${agentName} restarted successfully`, 'success');
+                    setTimeout(loadAgents, 2000);
+                } else {
+                    showAlert(`Failed to restart agent ${agentName}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error restarting agent ${agentName}`, 'error');
+            }
+        }
+
+        // Bulk operations
+        async function startAllAgents() {
+            if (!confirm('Start all stopped agents?')) return;
+            
+            for (const agent of agents) {
+                if (agent.status !== 'active') {
+                    await startAgent(agent.name);
+                    await new Promise(resolve => setTimeout(resolve, 500)); // Delay between starts
+                }
+            }
+        }
+
+        async function stopAllAgents() {
+            if (!confirm('Stop all running agents? This will pause system operations.')) return;
+            
+            for (const agent of agents) {
+                if (agent.status === 'active') {
+                    await stopAgent(agent.name);
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            }
+        }
+
+        async function restartAllAgents() {
+            if (!confirm('Restart all agents? This may cause temporary service interruption.')) return;
+            
+            for (const agent of agents) {
+                await restartAgent(agent.name);
+                await new Promise(resolve => setTimeout(resolve, 1000)); // Longer delay for restarts
+            }
+        }
+
+        function toggleConfig(agentName) {
+            const configPanel = document.getElementById(`config-${agentName}`);
+            configPanel.classList.toggle('show');
+        }
+
+        async function updateAgentConfig(agentName) {
+            try {
+                const config = {
+                    log_level: document.getElementById(`loglevel-${agentName}`).value,
+                    max_concurrent_tasks: parseInt(document.getElementById(`maxTasks-${agentName}`).value),
+                    processing_interval: parseInt(document.getElementById(`interval-${agentName}`).value)
+                };
+
+                const response = await fetch(`/api/agents/${agentName}/config`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ config })
+                });
+
+                if (response.ok) {
+                    showAlert(`Configuration updated for ${agentName}`, 'success');
+                    toggleConfig(agentName);
+                } else {
+                    showAlert(`Failed to update configuration for ${agentName}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`Error updating configuration for ${agentName}`, 'error');
+            }
+        }
+
+        // System operations
+        async function runSystemTest() {
+            showAlert('Running system test...', 'warning');
+            
+            try {
+                const response = await fetch('/api/orchestrator/test-event', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    showAlert('System test completed successfully', 'success');
+                } else {
+                    showAlert('System test failed', 'error');
+                }
+            } catch (error) {
+                showAlert('Error running system test', 'error');
+            }
+        }
+
+        async function clearCaches() {
+            if (!confirm('Clear all system caches? This may temporarily impact performance.')) return;
+            
+            try {
+                const response = await fetch('/api/orchestrator/clear-cache', {
+                    method: 'POST'
+                });
+                
+                if (response.ok) {
+                    showAlert('Caches cleared successfully', 'success');
+                } else {
+                    showAlert('Failed to clear caches', 'error');
+                }
+            } catch (error) {
+                showAlert('Error clearing caches', 'error');
+            }
+        }
+
+        function exportAgentLogs() {
+            window.open('/api/monitoring/export-logs', '_blank');
+        }
+
+        function refreshAgents() {
+            showAlert('Refreshing agent status...', 'warning');
+            loadAgents();
+        }
+
+        function resetMetrics() {
+            if (!confirm('Reset all agent metrics? This action cannot be undone.')) return;
+            showAlert('Metrics reset functionality not implemented yet', 'warning');
+        }
+
+        function openGlobalConfig() {
+            showAlert('Global configuration panel not implemented yet', 'warning');
+        }
+
+        function importConfig() {
+            showAlert('Configuration import not implemented yet', 'warning');
+        }
+
+        function exportConfig() {
+            showAlert('Configuration export not implemented yet', 'warning');
+        }
+
+        function resetToDefaults() {
+            if (!confirm('Reset all configurations to defaults? This action cannot be undone.')) return;
+            showAlert('Reset to defaults not implemented yet', 'warning');
+        }
+
+        // Auto-refresh every 30 seconds
+        function startAutoRefresh() {
+            refreshInterval = setInterval(loadAgents, 30000);
+        }
+
+        function stopAutoRefresh() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAgents();
+            startAutoRefresh();
+        });
+
+        // Stop auto-refresh when page is hidden
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                stopAutoRefresh();
+            } else {
+                startAutoRefresh();
+            }
+        });
+    </script>
+</body>
+</html>
