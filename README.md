@@ -55,10 +55,10 @@ The system consists of 8 core components:
    ```
 
 4. **Access the application**
-   - Dashboard: http://localhost:8080/
-   - Agent Management: http://localhost:8080/agents
-   - Monitoring: http://localhost:8080/monitoring
-   - Knowledge Base: http://localhost:8080/knowledge
+   - Dashboard: http://localhost:7788/
+   - Agent Management: http://localhost:7788/agents
+   - Monitoring: http://localhost:7788/monitoring
+   - Knowledge Base: http://localhost:7788/knowledge
 
 ## 📋 Features
 
@@ -134,7 +134,7 @@ cognitive-architecture/
 | `AZURE_OPENAI_DEPLOYMENT` | Model deployment name | `gpt-4` |
 | `APP_ENV` | Application environment | `dev` or `prod` |
 | `HOST` | Server host | `0.0.0.0` |
-| `PORT` | Server port | `8080` |
+| `PORT` | Server port | `7788` |
 | `LOG_LEVEL` | Logging level | `INFO` |
 
 ### Agent Configuration

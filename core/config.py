@@ -11,7 +11,7 @@ class Settings(BaseModel):
     app_name: str = "Agentic Framework"
     app_env: str = os.getenv("APP_ENV", "dev")
     host: str = os.getenv("HOST", "0.0.0.0")
-    port: int = int(os.getenv("PORT", "8080"))
+    port: int = int(os.getenv("PORT", "7788"))
     
     # Azure OpenAI Configuration
     azure_openai_endpoint: str = os.getenv("AZURE_OPENAI_ENDPOINT", "")
